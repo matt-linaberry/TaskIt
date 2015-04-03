@@ -80,11 +80,25 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if (section == 0) {
-            return "To Do"
+        if (fetchedResultsController.sections?.count == 1) {
+            // if theres one section, what should we do?
+            // then is this a completed or to do section?
+            let fetchedObjects = fetchedResultsController.fetchedObjects!
+            let testTask:TaskModel = fetchedObjects[0] as TaskModel
+            if (testTask.completed == true) {
+                return "Completed"
+            }
+            else {
+                return "To Do"
+            }
         }
         else {
-            return "Completed"
+            if (section == 0) {
+                return "To Do"
+            }
+            else {
+                return "Completed"
+            }
         }
     }
     // immediately adds swipe functionality per row.
@@ -92,11 +106,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         let thisTask = fetchedResultsController.objectAtIndexPath(indexPath) as TaskModel
         
-        if (indexPath.section == 0) {
-            thisTask.completed = true
+        if (thisTask.completed == true) {
+            thisTask.completed = false
         }
         else {
-            thisTask.completed = false
+            thisTask.completed = true
         }
         (UIApplication.sharedApplication().delegate as AppDelegate).saveContext()
 
