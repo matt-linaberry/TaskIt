@@ -34,7 +34,7 @@ class TaskDetailViewController: UIViewController {
     }
 
     @IBAction func doneButtonPressed(sender: AnyObject) {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         detailTaskModel.task = taskTextField.text
         detailTaskModel.subtask = subTaskTextField.text
         detailTaskModel.date = dueDatePicker.date
