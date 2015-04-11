@@ -13,7 +13,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     @IBOutlet weak var tableView: UITableView!
     
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext!
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
     var fetchedResultsController:NSFetchedResultsController = NSFetchedResultsController()
     
     override func viewDidLoad() {
@@ -32,13 +32,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     // prepare to move to the detail task view.
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showTaskDetail" {
-            let detailVC: TaskDetailViewController = segue.destinationViewController as! TaskDetailViewController
+            let detailVC: TaskDetailViewController = segue.destinationViewController as TaskDetailViewController
             let indexPath = self.tableView.indexPathForSelectedRow()
-            let thisTask = fetchedResultsController.objectAtIndexPath(indexPath!) as! TaskModel
+            let thisTask = fetchedResultsController.objectAtIndexPath(indexPath!) as TaskModel
             detailVC.detailTaskModel = thisTask
         }
         else if segue.identifier == "showTaskAdd" {
-            let addTaskVC:AddTaskViewController = segue.destinationViewController as! AddTaskViewController
+            let addTaskVC:AddTaskViewController = segue.destinationViewController as AddTaskViewController
             
         }
     }
@@ -60,9 +60,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let thisTask:TaskModel = fetchedResultsController.objectAtIndexPath(indexPath) as! TaskModel
+        let thisTask:TaskModel = fetchedResultsController.objectAtIndexPath(indexPath) as TaskModel
         
-        var cell: TaskCell = tableView.dequeueReusableCellWithIdentifier("myCell") as! TaskCell
+        var cell: TaskCell = tableView.dequeueReusableCellWithIdentifier("myCell") as TaskCell
         cell.taskLabel.text = thisTask.task
         cell.subtaskLabel.text = thisTask.subtask
         cell.dateLabel.text = Date.toString(date: thisTask.date)
@@ -84,7 +84,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             // if theres one section, what should we do?
             // then is this a completed or to do section?
             let fetchedObjects = fetchedResultsController.fetchedObjects!
-            let testTask:TaskModel = fetchedObjects[0] as! TaskModel
+            let testTask:TaskModel = fetchedObjects[0] as TaskModel
             if (testTask.completed == true) {
                 return "Completed"
             }
@@ -104,7 +104,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     // immediately adds swipe functionality per row.
     // mark the selected task as complete.
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        let thisTask = fetchedResultsController.objectAtIndexPath(indexPath) as! TaskModel
+        let thisTask = fetchedResultsController.objectAtIndexPath(indexPath) as TaskModel
         
         if (thisTask.completed == true) {
             thisTask.completed = false
@@ -112,7 +112,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         else {
             thisTask.completed = true
         }
-        (UIApplication.sharedApplication().delegate as! AppDelegate).saveContext()
+        (UIApplication.sharedApplication().delegate as AppDelegate).saveContext()
 
         
     }

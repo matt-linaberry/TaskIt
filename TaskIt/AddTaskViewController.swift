@@ -31,7 +31,7 @@ class AddTaskViewController: UIViewController {
     @IBAction func addTaskButtonPressed(sender: UIButton) {
         // recognize when the task is to be added
         // get access to our appDelegate
-        let appDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
+        let appDelegate = (UIApplication.sharedApplication().delegate as AppDelegate)
         let managedObjectContext = appDelegate.managedObjectContext  //.. because we want to access the managed object context
         let entityDescription = NSEntityDescription.entityForName("TaskModel", inManagedObjectContext: managedObjectContext!)
         
