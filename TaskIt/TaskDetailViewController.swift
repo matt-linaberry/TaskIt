@@ -8,6 +8,10 @@
 
 import UIKit
 
+@objc protocol TaskDetailViewControllerDelegate {
+    optional func taskDetailEdited()
+}
+
 class TaskDetailViewController: UIViewController {
 
     var detailTaskModel: TaskModel!    
@@ -15,12 +19,16 @@ class TaskDetailViewController: UIViewController {
     @IBOutlet weak var dueDatePicker: UIDatePicker!
     @IBOutlet weak var subTaskTextField: UITextField!
     @IBOutlet weak var taskTextField: UITextField!
+    
+    var delegate:TaskDetailViewControllerDelegate?  // this will be an optional too
+    
     @IBAction func cancelButtonPressed(sender: AnyObject) {
         // make the current view controller disappear!
         self.navigationController?.popViewControllerAnimated(true)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "Background")!)
 
         // Do any additional setup after loading the view.
         self.taskTextField.text = detailTaskModel.task
@@ -34,7 +42,7 @@ class TaskDetailViewController: UIViewController {
     }
 
     @IBAction func doneButtonPressed(sender: AnyObject) {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         detailTaskModel.task = taskTextField.text
         detailTaskModel.subtask = subTaskTextField.text
         detailTaskModel.date = dueDatePicker.date
@@ -42,5 +50,6 @@ class TaskDetailViewController: UIViewController {
         
         appDelegate.saveContext()
         self.navigationController?.popViewControllerAnimated(true)
+        delegate?.taskDetailEdited!()
     }
 }

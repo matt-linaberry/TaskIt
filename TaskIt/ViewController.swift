@@ -9,17 +9,17 @@
 import UIKit
 import CoreData
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, TaskDetailViewControllerDelegate, AddTaskViewControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext!
     var fetchedResultsController:NSFetchedResultsController = NSFetchedResultsController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "Background")!)
         fetchedResultsController  = getFetchedResultsController()
         fetchedResultsController.delegate = self
         fetchedResultsController.performFetch(nil)  // get the stuff!
@@ -32,13 +32,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     // prepare to move to the detail task view.
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showTaskDetail" {
-            let detailVC: TaskDetailViewController = segue.destinationViewController as TaskDetailViewController
+            let detailVC: TaskDetailViewController = segue.destinationViewController as! TaskDetailViewController
             let indexPath = self.tableView.indexPathForSelectedRow()
-            let thisTask = fetchedResultsController.objectAtIndexPath(indexPath!) as TaskModel
+            let thisTask = fetchedResultsController.objectAtIndexPath(indexPath!) as! TaskModel
             detailVC.detailTaskModel = thisTask
+            detailVC.delegate = self
         }
         else if segue.identifier == "showTaskAdd" {
-            let addTaskVC:AddTaskViewController = segue.destinationViewController as AddTaskViewController
+            let addTaskVC:AddTaskViewController = segue.destinationViewController as! AddTaskViewController
+            addTaskVC.delegate = self
             
         }
     }
@@ -60,9 +62,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let thisTask:TaskModel = fetchedResultsController.objectAtIndexPath(indexPath) as TaskModel
+        let thisTask:TaskModel = fetchedResultsController.objectAtIndexPath(indexPath) as! TaskModel
         
-        var cell: TaskCell = tableView.dequeueReusableCellWithIdentifier("myCell") as TaskCell
+        var cell: TaskCell = tableView.dequeueReusableCellWithIdentifier("myCell") as! TaskCell
         cell.taskLabel.text = thisTask.task
         cell.subtaskLabel.text = thisTask.subtask
         cell.dateLabel.text = Date.toString(date: thisTask.date)
@@ -84,7 +86,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             // if theres one section, what should we do?
             // then is this a completed or to do section?
             let fetchedObjects = fetchedResultsController.fetchedObjects!
-            let testTask:TaskModel = fetchedObjects[0] as TaskModel
+            let testTask:TaskModel = fetchedObjects[0] as! TaskModel
             if (testTask.completed == true) {
                 return "Completed"
             }
@@ -101,10 +103,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
     }
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        cell.backgroundColor = UIColor.clearColor()
+    }
     // immediately adds swipe functionality per row.
     // mark the selected task as complete.
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        let thisTask = fetchedResultsController.objectAtIndexPath(indexPath) as TaskModel
+        let thisTask = fetchedResultsController.objectAtIndexPath(indexPath) as! TaskModel
         
         if (thisTask.completed == true) {
             thisTask.completed = false
@@ -112,7 +118,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         else {
             thisTask.completed = true
         }
-        (UIApplication.sharedApplication().delegate as AppDelegate).saveContext()
+        (UIApplication.sharedApplication().delegate as! AppDelegate).saveContext()
 
         
     }
@@ -136,6 +142,26 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         fetchedResultsController = NSFetchedResultsController(fetchRequest: taskFetchRequest(), managedObjectContext: managedObjectContext, sectionNameKeyPath: "completed", cacheName: nil)
         return fetchedResultsController
     }
-
+    
+    // TaskDetailViewControllerDelegate method
+    func taskDetailEdited() {
+        showAlert()
+    }
+    
+    func showAlert(message: String = "Congratulations") {
+        var alert = UIAlertController(title: "Change made!", message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    // AddTaskViewControllerDelegate method
+    
+    func addTask(message: String) {
+        showAlert(message: message)
+    }
+    
+    func addTaskCanceled(message: String) {
+        showAlert(message: message)
+    }
 }
 

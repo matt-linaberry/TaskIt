@@ -14,11 +14,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBOutlet weak var capitalizeTableView: UITableView!
     @IBOutlet weak var versionLabel: UILabel!
     let kVersionNumber = "1.0"
-    let kShouldCapitalizeTaskKey = "shoudCapitalizeTask"
-    let kShouldCompleteNewTodoKey = "completeNewTodo"
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "Background")!)
 
         // Do any additional setup after loading the view.
         self.capitalizeTableView.delegate = self
@@ -43,7 +43,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if tableView == self.capitalizeTableView {
             // is this from the capitalizeTableView?
-            var capitalizeCell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("capitalizeCell") as UITableViewCell
+            var capitalizeCell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("capitalizeCell") as! UITableViewCell
             if indexPath.row == 0 {
                 capitalizeCell.textLabel?.text = "No do not Capitalize"
                 if NSUserDefaults.standardUserDefaults().boolForKey(kShouldCapitalizeTaskKey) == false {
@@ -66,7 +66,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         }
         else {
             // must be from the completeNewTodo view!
-            var cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("completeNewTodoCell") as UITableViewCell
+            var cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("completeNewTodoCell") as! UITableViewCell
             if indexPath.row == 0 {
                 cell.textLabel?.text = "Do not complete task"
                 if NSUserDefaults.standardUserDefaults().boolForKey(kShouldCompleteNewTodoKey) == false {

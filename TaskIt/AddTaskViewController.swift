@@ -8,13 +8,24 @@
 
 import UIKit
 import CoreData
+
+protocol AddTaskViewControllerDelegate {
+    func addTask(message: String)
+    func addTaskCanceled(message: String)
+    
+}
+
 class AddTaskViewController: UIViewController {
 
     @IBOutlet weak var taskTextField: UITextField!
     @IBOutlet weak var subTaskTextField: UITextField!
     @IBOutlet weak var dueDatePicker: UIDatePicker!
+    
+    var delegate:AddTaskViewControllerDelegate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "Background")!)
 
         // Do any additional setup after loading the view.
     }
@@ -26,20 +37,32 @@ class AddTaskViewController: UIViewController {
     
     @IBAction func cancelButtonPressed(sender: UIButton) {
         self.dismissViewControllerAnimated(true, completion: nil)
+        delegate?.addTaskCanceled("Task not added after all.")
+
     }
 
     @IBAction func addTaskButtonPressed(sender: UIButton) {
         // recognize when the task is to be added
         // get access to our appDelegate
-        let appDelegate = (UIApplication.sharedApplication().delegate as AppDelegate)
+        let appDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
         let managedObjectContext = appDelegate.managedObjectContext  //.. because we want to access the managed object context
         let entityDescription = NSEntityDescription.entityForName("TaskModel", inManagedObjectContext: managedObjectContext!)
         
         let task = TaskModel(entity: entityDescription!, insertIntoManagedObjectContext: managedObjectContext!)
-        task.task = taskTextField.text
+        if NSUserDefaults.standardUserDefaults().boolForKey(kShouldCapitalizeTaskKey) == true {
+            task.task = taskTextField.text.capitalizedString
+        }
+        else {
+            task.task = taskTextField.text
+        }
         task.subtask = subTaskTextField.text
         task.date = dueDatePicker.date
-        task.completed = false
+        if NSUserDefaults.standardUserDefaults().boolForKey(kShouldCompleteNewTodoKey) == true {
+            task.completed = true
+        }
+        else {
+            task.completed = false
+        }
         
         appDelegate.saveContext()  // this saves the stuff!
         
@@ -51,8 +74,9 @@ class AddTaskViewController: UIViewController {
         for res in results {
             println(res)
         }
-        
         self.dismissViewControllerAnimated(true, completion: nil)
+        delegate?.addTask("Task Added!")
+
     }
     /*
     // MARK: - Navigation
