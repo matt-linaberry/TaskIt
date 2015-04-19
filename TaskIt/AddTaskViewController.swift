@@ -45,7 +45,7 @@ class AddTaskViewController: UIViewController {
         // recognize when the task is to be added
         // get access to our appDelegate
         let appDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
-        let managedObjectContext = appDelegate.managedObjectContext  //.. because we want to access the managed object context
+        let managedObjectContext = ModelManager.instance.managedObjectContext  //.. because we want to access the managed object context
         let entityDescription = NSEntityDescription.entityForName("TaskModel", inManagedObjectContext: managedObjectContext!)
         
         let task = TaskModel(entity: entityDescription!, insertIntoManagedObjectContext: managedObjectContext!)
@@ -64,7 +64,7 @@ class AddTaskViewController: UIViewController {
             task.completed = false
         }
         
-        appDelegate.saveContext()  // this saves the stuff!
+        ModelManager.instance.saveContext()  // this saves the stuff!
         
         // lets review evertying in the coredata DB
         var request = NSFetchRequest(entityName: "TaskModel")
